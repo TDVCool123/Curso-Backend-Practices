@@ -20,5 +20,11 @@ export const lg = {
 }
 
 export const jwt = {
-    secretKey:process.env.JWT_SECRET || 'your_secret_key'
+    secretKey:process.env.JWT_SECRET || 'your_secret_key',
+    expirationTime: process.env.JWT_TIME_EXPIRED || '3s'
+}
+
+export const redis={
+    url:process.env.REDIS_URL || "localhost"
+    
 }

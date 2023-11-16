@@ -15,7 +15,7 @@ export class UserEntity implements IUserEntity {
     @Column({ type: 'varchar' })
     passwordHash!: string;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', nullable: true })
     createdAt!: Date;
 
     @Column({ type: 'timestamp', nullable: true })
