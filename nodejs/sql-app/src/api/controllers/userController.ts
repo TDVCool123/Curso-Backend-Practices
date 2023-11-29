@@ -3,6 +3,8 @@ import { UserService } from '../../app/services/userService';
 import { UserDto } from '../../app/dtos/user.dto';
 import { CreateUserDTO } from '../../app/dtos/create.user.dto';
 import logger from '../../infrastructure/logger/logger';
+import { userValidationRules, validate } from '../middleware/userValidator';
+import { verifyTokenMiddleware } from '../middleware/verifyToken';
 
 export class UserController {
     public router: Router;
@@ -15,13 +17,128 @@ export class UserController {
         this.routes();
     }
 
+
+
+
+
+/**
+ * @swagger
+ 
+ * /get:
+ *   get:
+ *     summary: Conseguir un usuario en sql app
+ *     tags: [GetUser] 
+ *     requestBody:
+ *       required: false
+ *     responses:
+ *       200:
+ *         description: Inicio de sesión exitoso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/getResponse'
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Credenciales inválidas
+ *   
+ * post:
+ *   post:
+ *     summary: Conseguir un usuario en sql app
+ *     tags: [CreateUser] 
+ *     requestBody:
+ *       required: True
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/createUserCredentials'
+ *     responses:
+ *       200:
+ *         description: Usuario creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/createResponse'
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Credenciales inválidas
+ * 
+ * put:
+ *   put:
+ *     summary: Conseguir un usuario en sql app
+ *     tags: [updateUser] 
+ *     requestBody:
+ *       required: True
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/updateUserCredentials'
+ *     responses:
+ *       200:
+ *         description: Usuario modificado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/updateResponse'
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Credenciales inválidas
+ * 
+ * delete:
+ *   delete:
+ *     summary: Conseguir un usuario en sql app
+ *     tags: [deleteUser] 
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado exitosamente
+
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Credenciales inválidas
+ */
+
+
+
+
+
     public async getUserById(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
         const userDto = await this.userService.getUserById(id);
 
         if (!userDto) {
             res.status(404).json({ message: 'User not found' });
-            return;
+            return; 
         }
 
         res.json(userDto);
@@ -70,8 +187,8 @@ export class UserController {
     };
 
     public routes() {
-        this.router.get('/:id', this.getUserById.bind(this));
-        this.router.post('/', this.createUser.bind(this));
+        this.router.get('/:id',verifyTokenMiddleware, this.getUserById.bind(this));
+        this.router.post('/',userValidationRules(),validate, this.createUser.bind(this));
         this.router.delete('/:userId', this.deleteUser.bind(this));
         this.router.put('/:userId', this.updateUser.bind(this));
     }

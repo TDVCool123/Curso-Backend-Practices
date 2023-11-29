@@ -1,14 +1,14 @@
+import bcrypt from "bcrypt";
+import logger from "../../infrastructure/logger/logger";
+
+import { UserDto } from "../dtos/user.dto";
+import { LoginDTO } from "../dtos/login.dto";
+
+import { User } from "../../domain/models/user";
 import { IUserEntity } from "../../domain/entities/IUserEntity";
 import { UserRepository } from "../../domain/interfaces/userRepository";
-import logger from "../../infrastructure/logger/logger";
-import { LoginDTO } from "../dtos/login.dto";
-import { jwt as jwtConfig } from '../../infrastructure/config/config';
-import jwt from 'jsonwebtoken';
-import { UserDto } from "../dtos/user.dto";
-import { User } from "../../domain/models/user";
 import { EncryptImpl } from "../../infrastructure/utils/encrypt.jwt";
 import { ICacheService } from "../../domain/interfaces/cacheRepository";
-import bcrypt from "bcrypt";
 
 
 
@@ -17,7 +17,7 @@ export class AuthService {
         this.getCache
     }
 
-    async getCache(){
+    async getCache(){ //Crear el metodo getCache para imprimir lo guardado en consola
         const USER_KEY = 'USER'
         const userID = '9e95f28b-b323-44a5-9bac-7a6ea3f8e1d6'
         const ROLE_KEY = "ROLE"
@@ -34,11 +34,9 @@ export class AuthService {
             email: loginDTO.email,
             passwordHash: loginDTO.password
         };
-        const user: User = await this.userRepository.findByEmail(userEntity.email);
+        const user: User = await this.userRepository.findByEmail(userEntity.email); //guarda en user el email que se proporciono
         console.log("🚀 ~ file: authService.ts:34 ~ AuthService ~ login ~ user:", user)
 
-        const USER_KEY = 'USER'
-        this.redisCacheService.set(`${USER_KEY}:${user.id}`, JSON.stringify(user))
 
         if (!user) {
             logger.error(`El usuario con el email: ${userEntity.email} no existe`);
@@ -50,10 +48,10 @@ export class AuthService {
         const isPasswordCorrect = await bcrypt.compare(userEntity.passwordHash, user.passwordHash);
         if (!isPasswordCorrect) {
             logger.error(`La contraseña es incorrecta : ${userEntity.passwordHash}`);
-            throw Error('El email o el password son incorrectos');
+            throw Error('El email o la contraseña son incorrectos');
         }
 
-        const token = this.encrypt.encrypt({ userId: user.id });
+        const token = await this.encrypt.encrypt({ userId: user.id });
         user.token = token;
         user.lastLogin = new Date();
 

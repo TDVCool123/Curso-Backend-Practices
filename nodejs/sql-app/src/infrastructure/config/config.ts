@@ -28,3 +28,10 @@ export const redis={
     url:process.env.REDIS_URL || "localhost"
     
 }
+
+
+export const swagger={
+tittle:process.env.SWAGGER_TITTLE ||'API de Mi Aplicación',
+version:process.env.SWAGGER_VERSION ||' 1.0.0',
+description:process.env.SWAGGER_DESCRIPTION || 'Esta es la documentación de mi API'
+}

@@ -16,6 +16,6 @@ export const verifyTokenMiddleware = (req: Request, res: Response, next: NextFun
             next();
         });
     } else {
-        res.status(401).json({ message: "Token no proporcionado" });
+        res.status(401).json({ message: "Token no proporcionado" });
     }
 };

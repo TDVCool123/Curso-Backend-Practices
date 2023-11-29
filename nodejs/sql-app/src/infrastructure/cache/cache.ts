@@ -6,8 +6,8 @@ export class RedisCacheService implements ICacheService{
     private client;
 
     constructor(){
-        this.client = createClient({url: redis.url});//crear cliente
-        this.client.connect();//conectar al cliente cada que se instancie el cliente
+        this.client = createClient({url: redis.url}); //crear cliente
+        this.client.connect(); //conectar al cliente cada que se instancie el cliente
     }
 
     async get(key: string): Promise<string | null> {
